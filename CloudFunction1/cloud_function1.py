@@ -1,19 +1,23 @@
 import boto3
 import requests
 import json
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 service_name = 's3'
 endpoint_url = 'https://kr.object.ncloudstorage.com'
 region_name = 'kr-standard'
-access_key = 'gH5CwLikn2NvdEuAhmep'
-secret_key = 'hjDXZ85BVkPIjg6EteJWTZtC0zAqIK6XRXEkpzT6'
+access_key = os.getenv('access_key')
+secret_key = os.getenv('secret_key')
 
 
 class ClovaSpeechClient:
     # Clova Speech invoke URL
-    invoke_url = 'https://clovaspeech-gw.ncloud.com/external/v1/7910/e0b9a8799f32453a478c9122f8b83cee68e16db18f493ac81bc1d474594b5df4'
+    invoke_url = os.getenv('invoke_url')
     # Clova Speech secret key
-    secret = '48f55a6172f349cab12c1f5a501755ee'
+    secret = os.getenv('secret')
 
     def req_url(self, url, completion, callback=None, userdata=None, forbiddens=None, boostings=None, wordAlignment=True, fullText=True, diarization=None, sed=None):
         request_body = {

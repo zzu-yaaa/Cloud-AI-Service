@@ -1,12 +1,16 @@
 import requests
 import json
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class ClovaSpeechClient:
     # Clova Speech invoke URL
-    invoke_url = ''
+    invoke_url = os.getenv('invoke_url')
     # Clova Speech secret key
-    secret = ''
+    secret = os.getenv('secret')
 
     def req_url(self, url, completion, callback=None, userdata=None, forbiddens=None, boostings=None, wordAlignment=True, fullText=True, diarization=None, sed=None):
         request_body = {
@@ -31,7 +35,7 @@ class ClovaSpeechClient:
                              url=self.invoke_url + '/recognizer/url',
                              data=json.dumps(request_body).encode('UTF-8'))
 
-    def req_object_storage(self, data_key, completion, callback=None, userdata=None, forbiddens=None, boostings=None,
+    def req_object_storage(self, data_key, completion, callback, resultToObs, userdata=None, forbiddens=None, boostings=None,
                            wordAlignment=True, fullText=True, diarization=None, sed=None):
         request_body = {
             'dataKey': data_key,
@@ -41,6 +45,7 @@ class ClovaSpeechClient:
             'userdata': userdata,
             'wordAlignment': wordAlignment,
             'fullText': fullText,
+            'resultToObs' : resultToObs,
             'forbiddens': forbiddens,
             'boostings': boostings,
             'diarization': diarization,
@@ -58,5 +63,6 @@ class ClovaSpeechClient:
 
 if __name__ == '__main__':
     #res = ClovaSpeechClient().req_url(url='https://kr.object.ncloudstorage.com/semicolon-recording-voice/test1.m4a', completion='sync')
-    res = ClovaSpeechClient().req_object_storage(data_key='test1.m4a', completion='sync') #dataKey = 파일명
+    res = ClovaSpeechClient().req_object_storage(data_key='test1.m4a', completion='async',
+                                                  callback='https://kr.object.ncloudstorage.com/semicolon-recording-text', resultToObs=True)
     print(res.text)

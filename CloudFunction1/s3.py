@@ -1,10 +1,14 @@
 import boto3
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 service_name = 's3'
 endpoint_url = 'https://kr.object.ncloudstorage.com'
 region_name = 'kr-standard'
-access_key = ''
-secret_key = ''
+access_key = os.getenv('access_key')
+secret_key = os.getenv('secret_key')
 
 def list_bucket_contents(s3, bucket_name, max_keys):
     response = s3.list_objects(Bucket=bucket_name, MaxKeys=max_keys)
