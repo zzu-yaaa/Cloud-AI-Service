@@ -12,7 +12,6 @@ region_name = 'kr-standard'
 access_key = os.getenv('access_key')
 secret_key = os.getenv('secret_key')
 
-
 class ClovaSpeechClient:
     # Clova Speech invoke URL
     invoke_url = os.getenv('invoke_url')
