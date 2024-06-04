@@ -127,8 +127,6 @@ if __name__ == "__main__":
     
     target_bucket_name = 'semicolon-recording-text'
     object_name = 'stt_test1.json'
-    owner_id = 'test-owner-id'
-    target_id = 'test-user-id'
     
     # 버킷 ACL 설정
     #set_bucket_acl(s3, target_bucket_name)
