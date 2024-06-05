@@ -41,7 +41,7 @@ class ClovaSpeechClient:
                              url=self.invoke_url + '/recognizer/url',
                              data=json.dumps(request_body).encode('UTF-8'))
 
-    def req_object_storage(self, data_key, completion, callback=None, userdata=None, forbiddens=None, boostings=None,
+    def req_object_storage(self, data_key, completion, callback, resultToObs, userdata=None, forbiddens=None, boostings=None,
                            wordAlignment=True, fullText=True, diarization=None, sed=None):
         request_body = {
             'dataKey': data_key,
@@ -51,6 +51,7 @@ class ClovaSpeechClient:
             'userdata': userdata,
             'wordAlignment': wordAlignment,
             'fullText': fullText,
+            'resultToObs' : resultToObs,
             'forbiddens': forbiddens,
             'boostings': boostings,
             'diarization': diarization,
@@ -130,5 +131,8 @@ if __name__ == "__main__":
     clova speech api 호출    
     """
     #res = ClovaSpeechClient().req_url(url='https://kr.object.ncloudstorage.com/semicolon-recording-voice/test1.m4a', completion='sync')
-    res = ClovaSpeechClient().req_object_storage(data_key=latest_object.get('Key'), completion='sync')
+    #res = ClovaSpeechClient().req_object_storage(data_key=latest_object.get('Key'), completion='sync')
+    res = ClovaSpeechClient().req_object_storage(data_key=latest_object.get('Key'), completion='async',
+                                                  callback='https://kr.object.ncloudstorage.com/semicolon-recording-text', resultToObs=True)
+    
     print(res.text)
