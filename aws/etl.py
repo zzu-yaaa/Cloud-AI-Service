@@ -1,5 +1,3 @@
-#glue script
-
 import sys
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
@@ -8,11 +6,10 @@ from awsglue.context import GlueContext
 from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.functions import col, explode, first, concat_ws
-from pyspark.sql import functions as F
 import boto3
 
 # 인수 읽기
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+args = getResolvedOptions(sys.argv, ['JOB_NAME', 'S3_BUCKET', 'S3_KEY'])
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
@@ -20,10 +17,11 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 # S3에서 데이터 읽기
-datasource0 = glueContext.create_dynamic_frame.from_catalog(
-    database="semicolon-glue-db",
-    table_name="meeton_stt_result",
-    transformation_ctx="datasource0"
+s3_path = f"s3://{args['S3_BUCKET']}/{args['S3_KEY']}"
+datasource0 = glueContext.create_dynamic_frame.from_options(
+    connection_type="s3",
+    connection_options={"paths": [s3_path]},
+    format="json"
 )
 
 # 필요한 정보 추출
@@ -41,6 +39,16 @@ exploded_df = df.withColumn("segment", explode("segments")).select(
     col('segment.start').cast("string").alias('time'),
     col('segment.textEdited').alias('content'),
     col('segment.speaker.name').alias('name')
+)
+
+# DataFrame을 다시 DynamicFrame으로 변환하여 DynamoDB에 저장
+extracted_segments = DynamicFrame.fromDF(exploded_df, glueContext, "extracted_segments")
+
+glueContext.write_dynamic_frame.from_options(
+    frame=extracted_segments,
+    connection_type="dynamodb",
+    connection_options={"dynamodb.output.tableName": "semicolon-voice-log"},
+    transformation_ctx="datasink4"
 )
 
 # 필요한 형식으로 문자열 결합
