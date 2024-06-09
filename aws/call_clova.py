@@ -54,7 +54,7 @@ def lambda_handler(event, context):
         host='https://clovastudio.stream.ntruss.com',
         api_key='키',
         api_key_primary_val='키',
-        request_id='아이디'
+        request_id='요청아이디'
     )
 
     fixed_content = (
